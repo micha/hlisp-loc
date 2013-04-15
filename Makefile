@@ -1,0 +1,2 @@
+all:
+	lein hlisp auto
