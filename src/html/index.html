@@ -7,7 +7,9 @@
 <body>
   <include type="text/hlisp" src="../include/index.cljs"></include>
   <reactive-attributes>
-    <h1 do="(d/value! phase)"></h1>
+    <div>
+      <h1 do="(d/text! phase)"></h1>
+    </div>
   </reactive-attributes>
 </body>
 </html>
