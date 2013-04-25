@@ -1,6 +1,6 @@
 (ns loc
   (:require-macros
-   [hlisp.macros                 :refer [tpl]]
+   [hlisp.macros                 :refer [tpl def-values]]
    [hlisp.reactive.macros        :refer [reactive-attributes]]
    [tailrecursion.javelin.macros :refer [cell]])
   (:require
@@ -34,47 +34,46 @@
 (defn set-addresses! [text]
   (reset! addresses (s/split text #"\n")))
 
-(cell (.log js/console "[addr]" (clj->js addresses))) 
-
 ;;; maps
-(def mapi (cell '{}))
-(def map-city (cell (:city mapi)))
-(def map-city-name (cell (:city-name mapi)))
 
-(cell (.log js/console "[mapi]" (clj->js mapi))) 
-
-(defn google-map [attrs & _]
-  (let [container (clone (div attrs))]
-    (add-initfn!
-     (fn []
-       (let [opts {:mapTypeId (or (:type attrs) google.maps.MapTypeId.ROADMAP)
-                   :zoom ((fnil js/parseInt 0) (:zoom attrs))}
-             el (aget (d/dom-get container) 0)
-             m (google.maps.Map. el (clj->js opts))]
-         (.log js/console (clj->js opts))
-         (reset! mapi {:map m
-                       :coder (google.maps.Geocoder.)
-                       :city-name (or (:city attrs) "Kiev, Ukraine")}))))
-    container))
-
-
-(defn find-map-position! [{:keys [map coder city-name] :as qwe}]
-  (when city-name ;; this should not happen
+(defn find-map-position! [coder city-name city-cell]
+  (when (and coder city-name) 
     (log "finding position")
     (.geocode
-     coder
-     (clj->js {:address city-name})
-     (fn [[city] status]
-       (swap! mapi assoc-in [:city] city)))))
+      coder
+      (clj->js {:address city-name})
+      (fn [[city] status]
+        (reset! city-cell city)))))
 
-(defn position-map! [{:keys [map city]}]
-  (when city
+(defn position-map! [goog-map city]
+  (when (and goog-map city) 
     (log "panning map")
-    (.panTo map
-            (-> city .-geometry .-location))))
+    (.panTo goog-map (-> city .-geometry .-location))))
 
-(cell ((fn [_] (find-map-position! @mapi)) map-city-name))
-(cell ((fn [_] (position-map! @mapi)) map-city))
+(defn make-google-map []
+  (fn [attrs & _] 
+    (let [container     (clone (div attrs))
+          goog-map      (cell nil)
+          map-city      (cell nil)
+          map-city-name (cell nil)
+          map-coder     (cell nil)]
+      (add-initfn!
+        (fn []
+          (let [opts {:mapTypeId (or (:type attrs) google.maps.MapTypeId.ROADMAP)
+                      :zoom ((fnil js/parseInt 0) (:zoom attrs))}
+                el (aget (d/dom-get container) 0)
+                m (google.maps.Map. el (clj->js opts))]
+            (.log js/console (clj->js opts))
+            (reset! goog-map m)
+            (reset! map-city-name (or (:city attrs) "Kiev, Ukraine"))
+            (reset! map-coder (google.maps.Geocoder.)))))
+      (cell (find-map-position! map-coder map-city-name '(cell map-city)))
+      (cell (position-map! goog-map map-city))
+      container)))
+
+(def google-map (make-google-map))
+(def google-map2 (make-google-map))
+
 
 ;; (cell (let [{:keys [map city]} mapi]
 ;;         (when city
