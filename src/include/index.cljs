@@ -49,6 +49,7 @@
                    :zoom 12}
              el (aget (d/dom-get cloned) 0)
              m (google.maps.Map. el (clj->js opts))]
+         (.log js/console (clj->js opts))
          (reset! mapi {:map m
                        :coder (google.maps.Geocoder.)
                        :city-name "Kiev, Ukraine"}))))
