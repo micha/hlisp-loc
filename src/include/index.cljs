@@ -57,16 +57,13 @@
         map-coder     (cell nil)]
     [map-city-name 
      (fn [attrs & _] 
-       (let [container     (clone (div attrs))
-
-             ]
+       (let [container (clone (div attrs))]
          (add-initfn!
            (fn []
              (let [opts {:mapTypeId (or (:type attrs) google.maps.MapTypeId.ROADMAP)
                          :zoom ((fnil js/parseInt 0) (:zoom attrs))}
                    el (aget (d/dom-get container) 0)
                    m (google.maps.Map. el (clj->js opts))]
-               (.log js/console (clj->js opts))
                (reset! goog-map m)
                (reset! map-city-name (or (:city attrs) "Kiev, Ukraine"))
                (reset! map-coder (google.maps.Geocoder.)))))
