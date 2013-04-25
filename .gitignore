@@ -15,3 +15,4 @@ pom.xml
 .lein-plugins
 .DS_Store
 /test/test.js
+/.lein-repl-history

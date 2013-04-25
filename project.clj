@@ -8,8 +8,7 @@
   :dependencies [[hlisp-macros "1.0.0"]
                  [hlisp-util "0.1.0-SNAPSHOT"]
                  [hlisp-reactive "1.0.2-SNAPSHOT"]
-                 [org.clojure/clojurescript "0.0-1586"]
-                 [alandipert/storage-atom "1.1.1"]]
+                 [org.clojure/clojurescript "0.0-1586"]]
   :eval-in      :leiningen
   :hlisp        {:html-src    "src/html"
                  :cljs-src    "src/cljs"

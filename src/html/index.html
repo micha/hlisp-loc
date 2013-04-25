@@ -3,12 +3,30 @@
 <head>
   <meta charset="utf-8">
   <title>Locations</title>
+  <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+  <link rel="stylesheet" href="../bootstrap.css" type="text/css" media="screen">
 </head>
 <body>
   <include type="text/hlisp" src="../include/index.cljs"></include>
   <reactive-attributes>
-    <div>
-      <h1 do="(d/text! phase)"></h1>
+    <div class="row">
+
+      <div class="span4">
+        <form>
+          <textarea style="width: 100%"
+                    do="(d/on! :change #(set-addresses! (d/value! (.-target %))))">
+          </textarea>
+          <button class="btn primary"
+                  do="(d/on! :click search!)">Locate</button>
+        </form>
+      </div>
+
+      <div class="span8">
+        <google-map>
+          <div id="map_canvas" style="height: 500px"></div>
+        </google-map>
+      </div>
+
     </div>
   </reactive-attributes>
 </body>
