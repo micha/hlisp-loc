@@ -47,8 +47,8 @@
   (let [container (clone (div opts))]
     (add-initfn!
      (fn []
-       (let [opts {:mapTypeId google.maps.MapTypeId.ROADMAP
-                   :zoom 12}
+       (let [opts {:mapTypeId (or (:type opts) google.maps.MapTypeId.ROADMAP)
+                   :zoom ((fnil js/parseInt 0) (:zoom opts))}
              el (aget (d/dom-get container) 0)
              m (google.maps.Map. el (clj->js opts))]
          (.log js/console (clj->js opts))
