@@ -38,7 +38,6 @@
 
 (defn find-map-position! [coder city-name city-cell]
   (when (and coder city-name) 
-    (log "finding position")
     (.geocode
       coder
       (clj->js {:address city-name})
@@ -47,7 +46,6 @@
 
 (defn position-map! [goog-map city]
   (when (and goog-map city) 
-    (log "panning map")
     (.panTo goog-map (-> city .-geometry .-location))))
 
 (defn make-google-map []
