@@ -43,18 +43,18 @@
 
 (cell (.log js/console "[mapi]" (clj->js mapi))) 
 
-(defn google-map [opts & _]
-  (let [container (clone (div opts))]
+(defn google-map [attrs & _]
+  (let [container (clone (div attrs))]
     (add-initfn!
      (fn []
-       (let [opts {:mapTypeId (or (:type opts) google.maps.MapTypeId.ROADMAP)
-                   :zoom ((fnil js/parseInt 0) (:zoom opts))}
+       (let [opts {:mapTypeId (or (:type attrs) google.maps.MapTypeId.ROADMAP)
+                   :zoom ((fnil js/parseInt 0) (:zoom attrs))}
              el (aget (d/dom-get container) 0)
              m (google.maps.Map. el (clj->js opts))]
          (.log js/console (clj->js opts))
          (reset! mapi {:map m
                        :coder (google.maps.Geocoder.)
-                       :city-name "Kiev, Ukraine"}))))
+                       :city-name (or (:city attrs) "Kiev, Ukraine")}))))
     container))
 
 
