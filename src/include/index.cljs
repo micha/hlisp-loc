@@ -51,28 +51,30 @@
     (.panTo goog-map (-> city .-geometry .-location))))
 
 (defn make-google-map []
-  (fn [attrs & _] 
-    (let [container     (clone (div attrs))
-          goog-map      (cell nil)
-          map-city      (cell nil)
-          map-city-name (cell nil)
-          map-coder     (cell nil)]
-      (add-initfn!
-        (fn []
-          (let [opts {:mapTypeId (or (:type attrs) google.maps.MapTypeId.ROADMAP)
-                      :zoom ((fnil js/parseInt 0) (:zoom attrs))}
-                el (aget (d/dom-get container) 0)
-                m (google.maps.Map. el (clj->js opts))]
-            (.log js/console (clj->js opts))
-            (reset! goog-map m)
-            (reset! map-city-name (or (:city attrs) "Kiev, Ukraine"))
-            (reset! map-coder (google.maps.Geocoder.)))))
-      (cell (find-map-position! map-coder map-city-name '(cell map-city)))
-      (cell (position-map! goog-map map-city))
-      container)))
+  (let [goog-map      (cell nil)
+        map-city      (cell nil)
+        map-city-name (cell nil)
+        map-coder     (cell nil)]
+    [map-city-name 
+     (fn [attrs & _] 
+       (let [container     (clone (div attrs))
 
-(def google-map (make-google-map))
-(def google-map2 (make-google-map))
+             ]
+         (add-initfn!
+           (fn []
+             (let [opts {:mapTypeId (or (:type attrs) google.maps.MapTypeId.ROADMAP)
+                         :zoom ((fnil js/parseInt 0) (:zoom attrs))}
+                   el (aget (d/dom-get container) 0)
+                   m (google.maps.Map. el (clj->js opts))]
+               (.log js/console (clj->js opts))
+               (reset! goog-map m)
+               (reset! map-city-name (or (:city attrs) "Kiev, Ukraine"))
+               (reset! map-coder (google.maps.Geocoder.)))))
+         (cell (find-map-position! map-coder map-city-name '(cell map-city)))
+         (cell (position-map! goog-map map-city))
+         container))]))
+
+(def-values [map-city-name google-map] (make-google-map))
 
 
 ;; (cell (let [{:keys [map city]} mapi]

@@ -12,7 +12,7 @@
     <div class="row">
 
       <div class="span4">
-        <form do="(d/on! :submit #(set-addresses! (d/value! ~addresses)))">
+        <form do="(d/on! :submit #(reset! map-city-name (d/value! ~addresses)))">
           <textarea style="width: 100%" id="addresses"></textarea>
           <button class="btn primary">Locate</button>
         </form>
@@ -20,7 +20,6 @@
 
       <div class="span8">
         <google-map id="map_canvas" style="height: 500px" city="Kiev, Ukraine" type="roadmap" zoom="12"/>
-        <google-map2 id="map_canvas" style="height: 500px" city="Miami, USA" type="roadmap" zoom="12"/>
       </div>
 
     </div>
