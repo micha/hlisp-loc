@@ -34,26 +34,28 @@
 (defn set-addresses! [text]
   (reset! addresses (s/split text #"\n")))
 
-(defn search! [e]
-  (.log js/console @addresses))
-
+(cell (.log js/console "[addr]" (clj->js addresses))) 
 
 ;;; maps
 (def mapi (cell '{}))
+(def map-city (cell (:city mapi)))
+(def map-city-name (cell (:city-name mapi)))
 
-(defn google-map [container]
-  (let [cloned (clone container)]
+(cell (.log js/console "[mapi]" (clj->js mapi))) 
+
+(defn google-map [opts & _]
+  (let [container (clone (div opts))]
     (add-initfn!
      (fn []
        (let [opts {:mapTypeId google.maps.MapTypeId.ROADMAP
                    :zoom 12}
-             el (aget (d/dom-get cloned) 0)
+             el (aget (d/dom-get container) 0)
              m (google.maps.Map. el (clj->js opts))]
          (.log js/console (clj->js opts))
          (reset! mapi {:map m
                        :coder (google.maps.Geocoder.)
                        :city-name "Kiev, Ukraine"}))))
-    cloned))
+    container))
 
 
 (defn find-map-position! [{:keys [map coder city-name] :as qwe}]
@@ -71,11 +73,8 @@
     (.panTo map
             (-> city .-geometry .-location))))
 
-(cell (when (mapi :city-name)
-        (find-map-position! mapi)))
-
-(cell (when (mapi :city)
-        (position-map! mapi)))
+(cell ((fn [_] (find-map-position! @mapi)) map-city-name))
+(cell ((fn [_] (position-map! @mapi)) map-city))
 
 ;; (cell (let [{:keys [map city]} mapi]
 ;;         (when city
